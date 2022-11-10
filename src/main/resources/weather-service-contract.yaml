@@ -1,0 +1,102 @@
+openapi: 3.0.3
+
+info:
+  version: 1.0.0
+  title: Weather Forecast Service
+  description: >-
+    This service provides ReST end points for weather forecast. It also returns the alerts about weather conditions.
+  contact:
+    name: Vibhor Mahajan
+    email: vibhor.mahajan03@gmail.com
+
+tags:
+  - name: Forecast
+    description: API for weather forecast
+
+servers:
+  - url: 'http://localhost:8080/weather-service'
+
+paths:
+  /forecast:
+    get:
+      tags:
+        - Forecast
+      summary: Get weather forecast
+      description: Get weather forecast for given city. 
+      operationId: getForecast
+      parameters:
+        - name: city
+          in: query
+          description: city for which forecast is required
+          required: true
+          schema:
+            type: string
+            minLength: 8
+            maxLength: 15
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ForecastResponse'
+        '400':
+          description: Request validation failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: City not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        
+
+components:
+  schemas:
+    ForecastResponse:
+      type: object
+      properties:
+        date:
+          description: date against the forecast
+          type: string
+          example: "2022-11-10T00:00:00Z"
+          readOnly: true
+        minTemperature:
+          description: min temperature for the day
+          type: string
+          example: 15.56
+          readOnly: true
+        maxTemperature:
+          description: max temperature for the day
+          type: string
+          example: 15.56
+          readOnly: true
+        alerts:
+          description: weather alerts for the day
+          type: array
+          items:
+            type: string
+          example: ['Carry umbrella']
+          readOnly: true
+      required:
+        - date
+        - minTemperature
+        - maxTemperature
+    Error:
+      type: object
+      properties:
+        message:
+          description: error message for the error occured
+          type: string
+          example: "City not found"
+          readOnly: true    
+    
